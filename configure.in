@@ -1,0 +1,196 @@
+dnl
+dnl	Copyright (c) 2003 Rinet Corp., Novosibirsk, Russia
+dnl
+dnl Redistribution and use in source forms, with and without modification,
+dnl are permitted provided that this entire comment appears intact.
+dnl Redistribution in binary form may occur without any restrictions.
+dnl
+dnl THIS SOFTWARE IS PROVIDED ``AS IS'' WITHOUT ANY WARRANTIES OF ANY KIND.
+dnl
+
+dnl
+dnl configure.in -- template for ./configure
+dnl Process this file with `autoconf' to produce a configure script
+dnl	remember to edit configure.in, not ./configure
+dnl
+
+AC_INIT(trafshow.c)
+AC_CONFIG_HEADER(config.h)
+
+AC_CANONICAL_SYSTEM
+
+dnl Checks for misc required programs.
+AC_PROG_CC
+dnl This is legacy K&R-style source; modern autoconf may probe for and
+dnl inject a strict -std=gnuNN flag, and K&R function definitions were
+dnl removed entirely in C23. Strip any injected -std= to keep the
+dnl compiler's permissive default dialect.
+CC=`echo "$CC" | sed 's/ -std=@<:@^ @:>@*//'`
+AC_PROG_YACC
+AC_PROG_LEX
+AC_REQUIRE_CPP
+AC_AIX
+ACX_PTHREAD(, AC_MSG_ERROR(cannot find pthread; see the INSTALL notes))
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_CHECK_HEADERS(sys/termios.h net/if_dl.h paths.h resolv.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_CHECK_TYPE(u_int8_t, unsigned char)
+AC_CHECK_TYPE(u_int16_t, unsigned short)
+AC_CHECK_TYPE(u_int32_t, unsigned int)
+AC_CHECK_TYPE(u_int64_t, unsigned long long)
+
+dnl AC_CHECK_TYPE(in_addr_t, unsigned int)
+dnl Some OS keeps in_addr_t in netinet/in.h not in sys/types.h
+AC_CACHE_CHECK(for in_addr_t, ac_cv_type_in_addr_t,
+	AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <netinet/in.h>
+		],[in_addr_t ipaddr],
+		ac_cv_type_in_addr_t="yes",
+		ac_cv_type_in_addr_t="unsigned int"
+	)
+)
+if test "$ac_cv_type_in_addr_t" != yes; then
+	AC_DEFINE_UNQUOTED(in_addr_t, $ac_cv_type_in_addr_t)
+fi
+
+AC_CACHE_CHECK(for socklen_t, ac_cv_type_socklen_t,
+	AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+	],[socklen_t slen],
+		ac_cv_type_socklen_t="yes",
+		ac_cv_type_socklen_t="int"
+	)
+)
+if test "$ac_cv_type_socklen_t" != yes; then
+	AC_DEFINE_UNQUOTED(socklen_t, $ac_cv_type_socklen_t)
+fi
+
+AC_CACHE_CHECK(for struct sockaddr_storage, ac_cv_sockaddr_storage,
+	AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+	],[struct sockaddr_storage ss],
+		ac_cv_sockaddr_storage="yes",
+		ac_cv_sockaddr_storage="no"
+	)
+)
+if test "$ac_cv_sockaddr_storage" != no; then
+	AC_DEFINE(HAVE_SOCKADDR_STORAGE)
+fi
+
+AC_CACHE_CHECK(for struct ether_addr, ac_cv_ether_addr,
+	AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <netinet/if_ether.h>
+	],[struct ether_addr ea],
+		ac_cv_ether_addr="yes",
+		ac_cv_ether_addr="no"
+	)
+)
+if test "$ac_cv_ether_addr" != no; then
+	AC_DEFINE(HAVE_ETHER_ADDR)
+fi
+
+AC_CACHE_CHECK(for IPv6 support, ac_cv_ipv6_support,
+	AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+		],[
+	struct sockaddr_in6 sin6;
+	struct in6_addr in6;
+	char dst@<:@64@:>@;
+	sin6.sin6_family = AF_INET6;
+	(void)inet_ntop(AF_INET6, &in6, dst, sizeof(dst));
+		],
+		ac_cv_ipv6_support="yes",
+		ac_cv_ipv6_support="no"
+	)
+)
+if test "$ac_cv_ipv6_support" != no; then
+	AC_DEFINE(INET6)
+fi
+
+dnl Check for network system libraries.
+AC_CHECK_LIB(resolv, main)
+AC_CHECK_LIB(inet, main)
+AC_CHECK_LIB(nsl, gethostbyname)
+AC_CHECK_LIB(socket, connect)
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(siginterrupt)
+AC_REPLACE_FUNCS(snprintf strftime strcasecmp)
+
+dnl Check for pcap libraries.
+AC_CHECK_LIB(pcap, pcap_findalldevs,,
+	     AC_MSG_ERROR(at least libpcap 0.7 is required; see the INSTALL notes))
+AC_CHECK_FUNCS(pcap_dump_flush)
+AC_CHECK_FUNCS(pcap_get_selectable_fd)
+
+dnl termcap library may be required.
+AC_CHECK_LIB(termcap, tgetent)
+
+AC_MSG_CHECKING(for curses library)
+AC_CACHE_VAL(ac_cv_have_curses,
+	ac_cv_save_CFLAGS="$CFLAGS"
+	ac_cv_save_LIBS="$LIBS"
+	LIBS="-lslang $ac_cv_save_LIBS"
+	AC_TRY_LINK([#include <slcurses.h>],[initscr();],
+	ac_cv_have_curses="slang",
+		LIBS="-lncurses $ac_cv_save_LIBS"
+		AC_TRY_LINK([#include <ncurses.h>], [initscr();],
+		ac_cv_have_curses="ncurses",
+			CFLAGS="-I/usr/include/ncurses $ac_cv_save_CFLAGS"
+			AC_TRY_LINK([#include <ncurses.h>], [initscr();],
+			ac_cv_have_curses="n_curses",
+				LIBS="-lcurses $ac_cv_save_LIBS"
+				AC_TRY_LINK([#include <curses.h>], [initscr();],
+				ac_cv_have_curses="curses",
+					ac_cv_have_curses="none"
+				)
+			)
+		)
+	)
+	CFLAGS="$ac_cv_save_CFLAGS"
+)
+AC_MSG_RESULT($ac_cv_have_curses)
+
+case "$ac_cv_have_curses" in
+
+slang)
+	AC_DEFINE(HAVE_SLCURSES)
+	AC_DEFINE(HAVE_HAS_COLORS)
+	;;
+ncurses)
+	AC_DEFINE(HAVE_NCURSES)
+	AC_CHECK_FUNCS(has_colors)
+	;;
+n_curses)
+	CFLAGS="-I/usr/include/ncurses $CFLAGS"
+	AC_DEFINE(HAVE_NCURSES)
+	AC_CHECK_FUNCS(has_colors)
+	;;
+curses)
+	AC_DEFINE(HAVE_CURSES)
+	AC_CHECK_FUNCS(has_colors)
+	;;
+*)
+	AC_MSG_ERROR(cannot find curses; see the INSTALL notes)
+	;;
+esac
+
+AC_CHECK_FUNCS(bkgd wbkgd wredrawln resizeterm use_default_colors)
+
+AC_OUTPUT(Makefile)

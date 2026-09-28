@@ -1,0 +1,184 @@
+.TH TRAFSHOW 1 "May 2004"
+.SH NAME
+trafshow - full screen show network traffic
+.SH SYNOPSIS
+.B trafshow
+[\fB-vpnb\fP]
+[\fB-a\fP \fIlen\fP]
+[\fB-c\fP \fIconf\fP]
+[\fB-i\fP \fIname\fP]
+[\fB-s\fP \fIstr\fP]
+[\fB-u\fP \fIport\fP]
+[\fB-R\fP \fIrefresh\fP]
+[\fB-P\fP \fIpurge\fP]
+[\fB-F\fP \fIfile\fP | \fIexpr\fP]
+.SH DESCRIPTION
+.PP
+.B TrafShow
+is a simple interactive program that gather the \fBnetwork traffic\fP from
+all libpcap-capable interfaces to accumulate it in memory cache, and then
+separately display it on appropriated curses window in line-narrowed manner
+as a list of network flows sorted by throughput. Display updates occurs
+nearly in real time, asynchronously from the data collecting. It look like
+a \fBlive show\fP of traffic flows. Any kind of network traffic are mixed
+together in the one live-show screen, an Ethernet, IP, etc.
+.br
+\fBHint\fP: Please press `\fBH\fP' key inside a show to get brief help!
+.PP
+The IP traffic can be \fBaggregated\fP by netmask prefix bits and service
+ports to reorganize a heap of trivial flows into the treelike hierarchies
+suitable for human perception. The user can glance over the list of resulting
+flows and select at their to browse detail. So you can deepen into the traffic
+inheritance hierarchy and inspect the packets of each trivial flow in variety
+of presentations: raw-hex, ascii, time-stamp.
+.br
+The program make aggregation automatically when number of flows will exceed
+some reasonable amount. Just a few seconds after launch may be required for
+adaptation to your volume of traffic.
+Use \fB-a\fP \fIlen\fP option (see below) to overwrite the default behaviour.
+.PP
+.B TrafShow
+also listens on UDP port (9995 by default) for diverse feeders of \fBCisco
+Netflow\fP and then separately display the collected data in the same manner
+as described above. The following versions of Netflow are currently supported:
+V1, V5, V7.
+Use \fB-u\fP \fIport\fP option (see below) to overwrite the default behaviour.
+.PP
+This program may be found wonderful at lest to locate suspicious traffic on
+the net very quickly on demand, or to evaluate real time traffic bandwidth
+utilization, in a simplest and convenient environment. But it is not intended
+for collecting and analysis of the network traffic for a long period of time,
+nor for billing!
+.PP
+The program pretend to be IPv6 compatible and ready to using, but it is not
+tested enough. You can define INET6 to do so.
+.SH OPTIONS
+.TP
+\fB-v\fP
+Print detailed version information and exit.
+.TP
+\fB-p\fP
+Do not put interface(s) into promiscuous mode.
+.TP
+\fB-n\fP
+Do not convert numeric values to names (host addresses, port numbers, etc.).
+The mode can be toggled On/Off during a show by pressing the `\fBN\fP' key.
+.TP
+\fB-b\fP
+To place a backflow entries near to the main streams in the sorted list of
+traffic flows.
+.br
+\fBNote\fP: this mode can raise the system load dangerously high because it
+take a lot of CPU cycles!
+.TP
+\fB-a\fP \fIlen\fP
+To aggregate traffic flows using IP netmask prefix \fIlen\fP. This option
+also turn on service ports aggregation. The \fIlen\fP expected as number of
+\fBbits\fP in the network portion of IP addresses (like CIDR).
+The aggragation \fIlen\fP can be changed during a show by pressing the
+`\fBA\fP' key, and turned Off by empty string.
+.br
+\fBHint\fP: Please use \fI0\fP to reduce output just for network services.
+.TP
+\fB-c\fP \fIconf\fP
+Use alternate color \fIconfig file\fP instead of default \fI/etc/trafshow\fP.
+.TP
+\fB-i\fP \fIname\fP
+Listen on the specified network interface \fIname\fP.
+If unspecified, \fBTrafShow\fP collect data from \fIall\fP network interfaces,
+configured \fBUP\fP in the system. In the last case the system must supply
+enough number of packet capture devices (like /dev/bpf#).
+.TP
+\fB-s\fP \fIstr\fP
+To search and follow for list \fBitem\fP matched by \fIstring\fP, moving the
+cursor bar. The found \fBitem\fP try to stay highlighted. The mode can be
+turned Off by `\fBCtrl\fP-\fB/\fP' key press or [re]entered again by `\fB/\fP'
+key directly in the live show.
+.TP
+\fB-u\fP \fIport\fP
+Listen on the specified UDP \fIport\fP number for the \fBCisco Netflow\fP feed.
+The default port number is \fI9995\fP.
+.br
+\fBHint\fP: Please use \fI0\fP to disable this functionality.
+.TP
+\fB-R\fP \fIrefresh\fP
+Set the \fBrefresh period\fP of data show to \fIseconds\fP, \fI2\fP seconds by
+default. This option can be changed during a show by pressing the `\fBR\fP' key.
+.TP
+\fB-P\fP \fIpurge\fP
+Set the expired data \fBpurge period\fP to \fIseconds\fP, \fI10\fP seconds by
+default. This option can be changed during a show by pressing the `\fBP\fP' key.
+.TP
+\fB-F\fP \fIfile\fP
+Use \fIfile\fP as input for the \fBfilter expression\fP.
+.TP
+\fIexpr\fP
+Select which packets will be displayed. If no \fIexpression\fP is given,
+all packets on the net will be displayed. Otherwise, only packets for
+which \fIexpression\fP is `true' will be displayed.
+.br
+The \fBfilter expression\fP can be changed during a show by pressing the
+`\fBF\fP' key, and turned Off by empty string.
+.br
+Please see \fBtcpdump\fP(1) man page for syntax of \fBfilter expression\fP.
+.SH FILES
+.TP
+.I /etc/trafshow
+The default colors configuration file if any.
+.TP
+.I $HOME/.trafshow
+The personal file with the user defined colors.
+.SH COLORS
+.PP
+If \fBTrafShow\fP has been compiled with modern curses libraries such as
+\fBSlang\fP or \fBNcurses\fP it been able to show colored traffic on the
+color-capable terminal. Hopefully, no special actions required to install
+them because your system has it by default (leastwise last years).
+.PP
+The syntax of \fBTrafShow\fP color configuration file as follow:
+.TP
+\fIdefault\fP \fIfcolor\fP\fB:\fP\fIbcolor\fP
+Set the default screen background color-pair
+.TP
+\fIheader\fP \fIfcolor\fP\fB:\fP\fIbcolor\fP
+Set the color of the column-title header line
+.TP
+\fIfooter\fP \fIfcolor\fP\fB:\fP\fIbcolor\fP
+Set the color of the summary footer line
+.TP
+\fIhelp\fP \fIfcolor\fP\fB:\fP\fIbcolor\fP
+Set the color of the help-menu popup
+.TP
+\fIport\fP[\fB/\fP\fIproto\fP] \fIfcolor\fP\fB:\fP\fIbcolor\fP
+Set color pattern by service port
+.TP
+[\fIproto\fP] \fIsrc\fP[\fB/\fP\fImask\fP][\fB,\fP\fIport\fP] \fIdst\fP[\fB/\fP\fImask\fP][\fB,\fP\fIport\fP] \fIfcolor\fP\fB:\fP\fIbcolor\fP
+Set color pattern by pair of source and destination addresses
+.PP
+The tokens \fI*\fP, \fIany\fP, or \fIall\fP matchs \fBANY\fP in the pattern.
+Where \fIfcolor\fP is foreground color and \fIbcolor\fP is background color.
+.br
+The fcolor and bcolor may be one of the following:
+.TP
+.I black  red  green  yellow  blue  magenta  cyan  white
+It posible to indicate color as number from 0 to 7.
+.PP
+The upper-case \fIF\fPcolor mean \fBbright on\fP.
+The upper-case \fIB\fPcolor mean \fBblink on\fP.
+.SH SEE ALSO
+pcap(3), tcpdump(1), bpf(4)
+.SH ACKNOWLEDGEMENTS
+Thanks to Van Jacobson <van(at)helios.ee.lbl.gov> and
+Steven McCanne <mccanne(at)helios.ee.lbl.gov>,
+all of Lawrence Berkeley Laboratory,
+University of California, Berkeley.
+Special thank to Jun-ichiro itojun Hagino <itojun(at)iijlab.net> for IPv6
+patches.
+.SH AUTHOR
+Vladimir Vorobyev <bob(at)turbo.nsk.su>.
+.SH BUGS
+Depending of traffic volume, \fBTrafShow\fP can take a lot of CPU cycles and
+memory.
+.br
+It is impossible to use packet matching \fBexpressions\fP in the NetFlow mode.
+

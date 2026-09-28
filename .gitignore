@@ -1,0 +1,10 @@
+Makefile
+config.h
+config.log
+config.status
+config.cache
+*.o
+trafshow
+version.c
+autom4te.cache/
+configure~

@@ -1,0 +1,44 @@
+
+			How to install trafshow.
+
+
+1.  First, make sure the libpcap already installed into your system.
+    See the README file in this directory for the minimum required version
+    of libpcap and it distribution. Follow the INSTALL file of pcap library
+    to build and install it.
+
+2.  Next, make sure you have already installed the curses library.
+    The most systems has the ncurses as default curses library. Currently
+    trafshow may be compiled with any curses library, configure script will
+    detect the prefered curses that supports colors.
+
+3.  Now, decide whether you want to place trafshow and man page.
+    The configure script option `--prefix' changes the root directory for
+    installing trafshow (/usr/local by default). Use `--prefix=/usr' to
+    replace your default trafshow distribution or just edit the BINDEST
+    and MANDEST paths in Makefile.in.
+
+4.  Type `./configure' to determine your system attributes and libraries
+    to generate an appropriate Makefile from Makefile.in and config.h from
+    config.h.in.
+    Some systems require unusual options for compilation of linking that
+    the configure script does not know about. You can give `configure'
+    initial values for variables by setting them in the environment. Using
+    a Bourne-compatible shell, you can do that on the command line like
+    this:
+         CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+
+5.  Type `make' to build the trafshow program.
+    Ignore any warnings, no error messages should be produced.
+    If you system is not listed in the README as one which we have tested,
+    you may have to modify the configure script, Makefile.in and probably
+    config.h.in. Please send us patches for any modifications you need to
+    make.
+
+6.  Login as root and type `make install'.
+    This should install trafshow and man page into your system.
+    It also copy example file of color configuration in /etc/trafshow, it
+    not replaced if already there.
+    By default, trafshow is installed with no any set-uid permission. So
+    you would decide who must have access to the packet capture devices.
+

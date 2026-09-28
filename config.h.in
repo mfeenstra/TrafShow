@@ -1,0 +1,115 @@
+/*
+ *	Copyright (c) 2004 Rinet Corp., Novosibirsk, Russia
+ *
+ * Redistribution and use in source forms, with and without modification,
+ * are permitted provided that this entire comment appears intact.
+ * Redistribution in binary form may occur without any restrictions.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' WITHOUT ANY WARRANTIES OF ANY KIND.
+ */
+
+#ifndef	_CONFIG_H_
+#define	_CONFIG_H_
+
+/*
+ * This file contain compile-time options and system-depended definitions.
+ * Please edit config.h after `./configure' before `make' (if required).
+ */
+
+/*
+ * The curses library definition.
+ */
+
+/* Define if you have the slang curses library (-lslang) */
+#undef HAVE_SLCURSES
+
+/* Define if you have the ncurses library (-lncurses) */
+#undef HAVE_NCURSES
+
+/* Define if you have the curses library (-lcurses) */
+#undef HAVE_CURSES
+
+/* Define if your curses has a colors functions such as
+   has_colors(), start_color(), init_pair(), and so on */
+#undef HAVE_HAS_COLORS
+
+/* Define if your curses has the bkgd() function */
+#undef HAVE_BKGD
+
+/* Define if your curses has the wbkgd() function */
+#undef HAVE_WBKGD
+
+/* Define if your curses has the wredrawln() function */
+#undef HAVE_WREDRAWLN
+
+/* Define if your curses has the resizeterm() function */
+#undef HAVE_RESIZETERM
+
+/* Define if your curses has the use_default_colors() function */
+#undef HAVE_USE_DEFAULT_COLORS
+
+/*
+ * System-depended definition.
+ */
+
+/* Define to `unsigned char' if <sys/types.h> doesn't define */
+#undef u_int8_t
+
+/* Define to `unsigned short' if <sys/types.h> doesn't define */
+#undef u_int16_t
+
+/* Define to `unsigned int' if <sys/types.h> doesn't define */
+#undef u_int32_t
+
+/* Define to `unsigned long long' if <sys/types.h> doesn't define */
+#undef u_int64_t
+
+/* Define to `unsigned int' if <sys/types.h> doesn't define */
+#undef in_addr_t
+
+/* Define to `int' if <sys/types.h> or <sys/socket.h> doesn't define */
+#undef socklen_t
+
+/* Define if <sys/socket.h> has declared `struct sockaddr_storage' */
+#undef HAVE_SOCKADDR_STORAGE
+
+/* Define if <netinet/if_ether.h> has declared `struct ether_addr' */
+#undef HAVE_ETHER_ADDR
+
+/* Define if this system supports IPv6 (struct sockaddr_in6, in6_addr) */
+#undef INET6
+
+/* Define if your libpcap has the pcap_dump_flush() function */
+#undef HAVE_PCAP_DUMP_FLUSH
+
+/* Define if your libpcap has the pcap_get_selectable_fd() function */
+#undef HAVE_PCAP_GET_SELECTABLE_FD
+
+/* Define if you have the siginterrupt() function */
+#undef HAVE_SIGINTERRUPT
+
+/* Define if you have the strcasecmp() function */
+#undef HAVE_STRCASECMP
+
+/* Define if you have the strftime() function */
+#undef HAVE_STRFTIME
+
+/* Define if you have POSIX threads libraries and header files */
+#undef HAVE_PTHREAD
+
+/* Define if you have the <sys/termios.h> header file */
+#undef HAVE_SYS_TERMIOS_H
+
+/* Define if you have the <net/if_dl.h> header file */
+#undef HAVE_NET_IF_DL_H
+
+/* Define if you have the <resolv.h> header file */
+#undef HAVE_RESOLV_H
+
+/* Define to empty if the keyword does not work */
+#undef const
+
+/* fake for osf */
+#undef __STDC__
+
+#endif	/* !_CONFIG_H */

@@ -1,0 +1,114 @@
+#
+# default fcolor:bcolor
+#	- Set the default screen background color-pair
+#
+# header fcolor:bcolor
+#	- Set the color of the column-title header line
+#
+# footer fcolor:bcolor
+#	- Set the color of the summary footer line
+#
+# help fcolor:bcolor
+#	- Set the color of the help-menu popup
+#
+# port[/proto] fcolor:bcolor
+#	- Set color pattern by service port
+#
+# [proto] source[/mask][,port] destination[/mask][,port] fcolor:bcolor
+#	- Set color pattern by pair of from-to addresses
+#
+# Reserved tokens `*', `any', `all' matchs ANY in the pattern.
+#
+# The colors are:
+#	black  red  green  yellow  blue  magenta  cyan  white
+#
+# The upper-case Fcolor mean bright *on* and Bcolor blink *on*.
+#
+# NOTE: rules are matched top-to-bottom and the first match wins, so this
+# file is layered: well-known-service colors first (for differentiation
+# by service type), then the LAN/WAN address fallback for anything that
+# didn't match a specific service, in that order.
+#
+
+#default white:blue
+
+# following color settings looks nice under black-on-gray xterm (xterm-color)
+
+# UI chrome.
+header		Red
+footer		Yellow
+help		Yellow:blue
+
+# Network Services.
+# Service	Color	Comments
+
+135		Red	# netbios
+137		red	# netbios
+138		red	# netbios
+139		red	# netbios
+
+snmp		white
+smux		white
+162		White	# snmp-trap
+67		white	# bootp/dhcp-server
+68		white	# bootp/dhcp-client
+546		white	# dhcpv6-client
+547		white	# dhcpv6-server
+timed		white
+who		white
+
+domain		cyan
+389		cyan	# ldap
+636		cyan	# ldaps
+*/icmp		Cyan
+
+http		blue
+https		blue
+3128		Blue	# http-proxy
+8080		Blue	# http-proxy
+
+smtp		Green
+nntp		Green
+pop3		green
+995		green	# pop3s
+143		green	# imap2,4
+220		green	# imap3
+
+ftp		yellow
+20		Yellow	# ftp-data
+tftp		Yellow
+nfs		Yellow
+6000		Yellow	# X11
+
+ssh		magenta
+telnet		Magenta
+sunrpc		Magenta
+513/tcp		Magenta	# rsh
+514/tcp		Magenta	# rcmd
+
+# LAN (private / loopback / link-local) addresses -> bright Blue,
+# everything else (WAN / public) -> bright Cyan. Only applies to
+# connections that didn't already match one of the service rules above.
+# Source		Destination		Color
+
+10.0.0.0/8		any			Blue
+any			10.0.0.0/8		Blue
+172.16.0.0/12		any			Blue
+any			172.16.0.0/12		Blue
+192.168.0.0/16		any			Blue
+any			192.168.0.0/16		Blue
+127.0.0.0/8		any			Blue
+any			127.0.0.0/8		Blue
+169.254.0.0/16		any			Blue
+any			169.254.0.0/16		Blue
+
+fc00::/8		any			Blue
+any			fc00::/8		Blue
+fd00::/8		any			Blue
+any			fd00::/8		Blue
+fe80::/10		any			Blue
+any			fe80::/10		Blue
+::1/128			any			Blue
+any			::1/128			Blue
+
+any			any			Cyan
